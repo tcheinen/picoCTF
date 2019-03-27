@@ -148,7 +148,7 @@ The {0} Team.
 
     bulk = [verification_message]
 
-    if settings["parent_verification_email"] and previous_key is None and user['demo']['age'] == "13-17":
+    if settings["email"]["parent_verification_email"] and previous_key is None and user['demo']['age'] == "13-17":
         body = """
 Welcome to {0}!
 
