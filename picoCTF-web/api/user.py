@@ -76,21 +76,22 @@ def get_user(name=None, uid=None, include_pw_hash=False):
     """
     db = api.db.get_conn()
 
-    match = {}
     projection = {"_id": 0}
     if not include_pw_hash:
         projection["password_hash"] = 0
 
     if uid is not None:
-        match.update({"uid": uid})
+        return db.users.find_one({"uid": uid}, projection)
     elif name is not None:
-        match.update({"username": name})
+        return db.users.find_one(
+            {"username": name},
+            projection,
+            collation=Collation(locale="en", strength=CollationStrength.PRIMARY),
+        )
     elif api.user.is_logged_in():
-        match.update({"uid": session["uid"]})
+        return db.users.find_one({"uid": session["uid"]}, projection)
     else:
         raise PicoException("Could not retrieve user - not logged in", 401)
-
-    return db.users.find_one(match, projection)
 
 
 def get_users(email=None, parentemail=None, username=None, include_pw_hash=False):
