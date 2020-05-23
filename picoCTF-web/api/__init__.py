@@ -95,6 +95,12 @@ def create_app(config=None):
         response.status_code = e.status_code
         return response
 
+    @app.errorhandler(404)
+    def page_not_found(e):
+        response = jsonify({"message": "API endpoint not found"})
+        response.status_code = 404
+        return response
+
     if not app.debug:
 
         @app.errorhandler(Exception)
