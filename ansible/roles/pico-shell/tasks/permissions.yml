@@ -51,3 +51,10 @@
     path: /opt/hacksports
     mode: "o-r"
     recurse: yes
+
+# also adding here to update permissions if you have already created this folder.
+- name: Restrict readability of /usr/share/nginx/html/static
+  file:
+    path: /usr/share/nginx/html/static
+    mode: 0751
+    recurse: no

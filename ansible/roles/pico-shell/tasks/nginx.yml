@@ -44,3 +44,11 @@
     mode: 0644
   when: enable_shell_ssl | bool
 
+# create the static folder directory if it does not already exist
+- name: Create static web folder directory if it does not exist
+  file:
+    path: /usr/share/nginx/html/static
+    state: directory
+    mode: 0751
+    owner: root
+    group: root
