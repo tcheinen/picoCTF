@@ -22,10 +22,7 @@ The following steps will use [Vagrant](https://www.vagrantup.com/) to get you
 quickly up and running with the picoCTF platform by deploying the code base to
 two local virtual machines.
 
-1. `git clone --branch v19.0.1 -c core.autocrlf=false https://github.com/picoCTF/picoCTF.git`  
-   (see [this
-   link](https://github.com/picoCTF/picoCTF/issues/68#issuecomment-346736808)
-   for an explanation of this command line)
+1. `git clone https://github.com/picoCTF/picoCTF.git`
 2. `cd picoCTF`
 3. `vagrant up`
 4. Navigate to http://192.168.2.2/
@@ -37,7 +34,7 @@ picoCTF-web/web/_includes/header.html
 There are now quick ways to change the memory, number of CPUs and IP addresses and run multiple instances.
 
 After you do the git clone, rename picoCTF to picoCTF_XXX (fill in XXX with something unique for each)
-Start by running a command like the below. 
+Start by running a command like the below.
 J is the number of CPUs
 M is the amount of memory in GB
 SIP is shell IP address (default is 192.168.2.2)
@@ -170,8 +167,8 @@ If you are looking to run your own CTF competition, you should:
    ansible.
 2. You can reskin the look and feel of the site by editing the
    [picoCTF-web/web](picoCTF-web/web) javascript and HTML code.
-3. To enable password reset emails, log in using the site administrator 
-   account and configure Email under Management > Configuration. 
+3. To enable password reset emails, log in using the site administrator
+   account and configure Email under Management > Configuration.
 4. You should start writing your own problems, loading them into the shell
    server, and syncing the web server problem set with the shell server via the
    `/admin` URL endpoint.
