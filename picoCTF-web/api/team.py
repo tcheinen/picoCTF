@@ -444,7 +444,7 @@ def join_team(team_name, password, user):
     return desired_team["tid"]
 
 
-@log_action
+@log_action(dont_log=["params.new-password", "params.new-password-confirmation"])
 def update_password_request(params):
     """
     Update team password.

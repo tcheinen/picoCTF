@@ -1,5 +1,5 @@
 """Manage loggers for the API."""
-
+import inspect
 import logging
 import logging.handlers
 import traceback
@@ -39,7 +39,6 @@ class FunctionLoggingHandler(logging.StreamHandler):
                 {
                     "event": result["name"],
                     "args": result["args"],
-                    "kwargs": result["kwargs"],
                     "time": datetime.now(),
                 }
             )
@@ -140,29 +139,52 @@ def setup_logs(args):
     stats_log.setLevel(logging.INFO)
     log.root.addHandler(stats_log)
 
+def _remove_parameter(arg_dict, param_path):
+    """Recurses through a dictionary of dictionaries and removes the given param"""
+    if param_path[0] not in arg_dict:
+        return arg_dict
 
-def log_action(f):
+
+    new_dict = arg_dict.copy() # Needed to avoid aliasing effects
+    if len(param_path) == 1:
+        new_dict[param_path[0]] = "REDACTED"
+        return new_dict
+
+    new_dict[param_path[0]] = _remove_parameter(arg_dict[param_path[0]], param_path[1:])
+    return new_dict
+
+def log_action(_f=None, dont_log=[]):
     """Log a function invocation and its result."""
+    def outer_wrapper(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            """Provide contextual information to the logger."""
 
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        """Provide contextual information to the logger."""
-        log_information = {
-            "name": "{}.{}".format(f.__module__, f.__name__),
-            "args": args,
-            "kwargs": kwargs,
-            "result": None,
-        }
-        try:
-            log_information["result"] = f(*args, **kwargs)
-        except Exception as error:
-            log_information["exception"] = error
-            raise error
-        finally:
-            log.info(log_information)
-        return log_information["result"]
+            func_sig = inspect.signature(f)
+            func_args = dict(func_sig.bind_partial(*args, **kwargs).arguments)
+            for param in dont_log:
+                param_path = param.split(".")
+                func_args = _remove_parameter(func_args, param_path)
+            log_information = {
+                "name": "{}.{}".format(f.__module__, f.__name__),
+                "args": func_args,
+                "result": None,
+            }
+            try:
+                log_information["result"] = f(*args, **kwargs)
+            except Exception as error:
+                log_information["exception"] = error
+                raise error
+            finally:
+                log.info(log_information)
+            return log_information["result"]
 
-    return wrapper
+        return wrapper
+
+    if _f is None:
+        return outer_wrapper
+    else:
+        return outer_wrapper(_f)
 
 
 def get_api_exceptions(result_limit=50):
