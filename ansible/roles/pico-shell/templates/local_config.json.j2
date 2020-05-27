@@ -6,4 +6,13 @@
     "web_server": "{{ web_address_internal }}",
 {% endif %}
     "rate_limit_bypass_key": "{{ flask_app_rate_limit_bypass_key | default("INSECURE_DEFAULT_CHANGE_ME") }}"
+
+    {% if docker_internal_host is defined %}
+    ,
+    "docker_host": "{{ docker_internal_host }}",
+    "docker_ca_cert": "{{ docker_ca }}",
+    "docker_client_cert": "{{ docker_client }}",
+    "docker_client_key": "{{ docker_key }}"
+    {% endif %}
+
 }

@@ -49,3 +49,16 @@ redis_conf_auth: False
 # Problem Settings
 # use role defaults (example problems and challenge-sampler bundle)
 ##
+
+##
+# Docker challenge options
+##
+docker_public_host   : "{{ lookup('env','SIP') or '192.168.2.3' }}"
+docker_internal_host : "tcp://{{ docker_public_host }}:2376"
+docker_server_SAN    : "DNS:localhost,IP:{{docker_public_host}},IP:127.0.0.1"
+docker_dir           : "/home/{{ ansible_user }}/.docker"
+docker_ca            : "{{ docker_dir }}/ca.pem"
+docker_client        : "{{ docker_dir }}/cert.pem"
+docker_key           : "{{ docker_dir }}/key.pem"
+docker_ttl           : 3600  # 1 hour = 60 * 60 = 3600
+docker_containers_per_team: 3

@@ -1,0 +1,9 @@
+---
+
+- name: Install pip2
+  apt:
+    name: python-pip
+
+- name: Install cryptography (requirement for openssl_csr_module)
+  pip:
+    name: cryptography

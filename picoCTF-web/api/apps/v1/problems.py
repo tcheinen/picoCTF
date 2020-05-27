@@ -64,20 +64,21 @@ class ProblemList(Resource):
             category=req["category"], show_disabled=req["include_disabled"]
         )
 
-        # Add the unlocked, solved, and review fields
+        # Add the unlocked, solved, review, and container fields
         curr_user = api.user.get_user()
         for problem in problems:
-            problem["solves"] = api.stats.get_problem_solves(problem["pid"])
-            problem["unlocked"] = problem["pid"] in api.problem.get_unlocked_pids(
-                curr_user["tid"]
-            )
-            problem["solved"] = problem["pid"] in api.problem.get_solved_pids(
-                tid=curr_user["tid"]
-            )
+            pid = problem["pid"]
+            tid = curr_user["tid"]
+            problem["solves"] = api.stats.get_problem_solves(pid)
+            problem["unlocked"] = pid in api.problem.get_unlocked_pids(tid)
+            problem["solved"] = pid in api.problem.get_solved_pids(tid=tid)
             if curr_user.get("admin", False):
                 problem["reviews"] = api.problem_feedback.get_problem_feedback(
-                    pid=problem["pid"], count_only=True
+                    pid=pid, count_only=True
                 )
+            containers = api.docker.submission_to_cid(tid, pid)
+            if containers.count() > 0:
+                problem["container"] = dict(containers.next())
 
         # Handle the solved_only param
         if req["solved_only"]:

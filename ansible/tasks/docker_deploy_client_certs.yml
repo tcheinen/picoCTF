@@ -1,0 +1,11 @@
+---
+# deploy a client certificate to a server
+# must have already been generated with docker_gen_client_certs.yml
+
+- name: "Deploy docker client certs ({{client}}"
+  import_role:
+    name: docker_tls
+    tasks_from: config_user
+  vars:
+    user : "{{ansible_user}}"
+  tags: ["docker", "docker-client"]

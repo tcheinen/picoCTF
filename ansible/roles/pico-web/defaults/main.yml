@@ -59,3 +59,12 @@ enable_web_ssl: False
 # mongodb connect settings
 mongodb_replica_enabled: false
 mongodb_tls_enabled: false
+
+# Docker challenge support (disabled by default)
+docker_public_host: ""
+docker_internal_host: ""
+docker_ca: ""
+docker_client: ""
+docker_key: ""
+docker_ttl : 3600  # 1 hour = 60 * 60 = 3600
+docker_containers_per_team: 3

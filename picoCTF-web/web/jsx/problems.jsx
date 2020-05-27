@@ -1,4 +1,4 @@
-const { Badge, Button, ButtonGroup, Glyphicon, Col, Input, ListGroup,
+const { Badge, Button, ButtonGroup, ButtonToolbar, Glyphicon, Col, Input, ListGroup,
         ListGroupItem, NavItem, Panel, PanelGroup, ProgressBar, Row, Tab,
         Table, Tabs } = ReactBootstrap;
 const { update } = React.addons;
@@ -406,6 +406,67 @@ const ProblemSubmit = React.createClass({
      );
   },
 
+  dockerCreate (e) {
+    e.preventDefault();
+    $(e.target).html("Loading...")
+
+    const target = $(e.target);
+    const instanceDigest = target.data("value");
+    const doUpdate = this.props.updateProblemsList;
+    apiCall("POST", "/api/v1/docker/" + instanceDigest, {})
+      .done(function(data) {
+        apiNotify(data);
+        doUpdate();
+      })
+      .fail(jqXHR =>
+        apiNotify({ status: 0, message: jqXHR.responseJSON.message })
+      );
+  },
+
+  dockerStop (e) {
+    e.preventDefault();
+    const target = $(e.target);
+    const instanceDigest = target.data("digest");
+    const containerID = target.data("cid");
+    const doUpdate = this.props.updateProblemsList;
+    apiCall("DELETE", "/api/v1/docker/" + instanceDigest + "/" + containerID, {})
+      .done(function(data) {
+        apiNotify(data);
+        doUpdate();
+      })
+      .fail(jqXHR =>
+        apiNotify({ status: 0, message: jqXHR.responseJSON.message })
+      );
+  },
+
+  dockerReset (e) {
+    const target = $(e.target);
+    const instanceDigest = target.data("digest");
+    const containerID = target.data("cid");
+    const doUpdate = this.props.updateProblemsList;
+    apiCall("PUT", "/api/v1/docker/" + instanceDigest + "/" + containerID, {})
+      .done(function(data) {
+        apiNotify(data);
+        doUpdate();
+      })
+      .fail(jqXHR =>
+        apiNotify({ status: 0, message: jqXHR.responseJSON.message })
+      );
+  },
+
+  renderPorts() {
+      return (
+      <div>
+        {
+        this.props.container['ports'].map((port, index) => {
+         return (
+              <p className="problem-description"><strong>{port.desc}</strong>: <span dangerouslySetInnerHTML={ {__html: port.msg}}></span></p>
+           )
+      })
+        }
+      </div>)
+   },
+
   render() {
     const submitButton = (<Button className="btn-primary" type="submit">Submit!</Button>);
     const upButton = (
@@ -428,9 +489,65 @@ const ProblemSubmit = React.createClass({
         onClick={addProblemReview}
       />
     );
+
+    const createContainer = (
+      <Button
+        id={this.props.pid + "-docker-create"}
+        data-value={this.props.instance_digest}
+        className="btn btn-success btn-sm"
+        onClick={(e) => this.dockerCreate(e)}
+      >
+      Start Challenge
+      </Button>
+    );
+
+
+    var docker = (
+      <Row className="form-group">
+        <Col className="text-center">
+            {createContainer}
+        </Col>
+      </Row>
+    );
+
+    var style={justifyContent:"center", display: "flex"};
+
+    if (this.props.container ){
+      docker  = (
+      <Row className="form-group">
+        <ButtonToolbar style={style}>
+        <ButtonGroup>
+            <Button
+              id={this.props.pid + "-docker-reset"}
+              data-digest={this.props.instance_digest}
+              data-cid={this.props.container['cid']}
+              className="btn btn-warning btn-sm"
+              onClick={(e) => this.dockerReset(e)}
+            >
+            Reset
+            </Button>
+        </ButtonGroup>
+        <ButtonGroup>
+            <Button
+              id={this.props.pid + "-docker-stop"}
+              data-digest={this.props.instance_digest}
+              data-cid={this.props.container['cid']}
+              className="btn btn-danger btn-sm"
+              onClick={(e) => this.dockerStop(e)}
+            >
+            Stop
+            </Button>
+        </ButtonGroup>
+        </ButtonToolbar>
+      </Row>
+      )
+    };
+
     return (
       <Col>
         <p className="problem-description" dangerouslySetInnerHTML={ {__html: this.props.description} }></p>
+        {this.props.container && this.renderPorts()}
+        {this.props.docker_challenge && docker}
         <form className="problem-submit" onSubmit={this.submitProblem}>
           <Row>
             <Input

@@ -128,6 +128,15 @@ def submit_key(tid, pid, key, method, uid, ip=None):
         cache.invalidate(api.stats.get_score_progression, tid=tid, category=None)
         cache.invalidate(api.stats.get_score_progression, tid=tid)
 
+    # if the solve is correct there is no need to maintain the container
+    if correct:
+        instance = api.problem.get_instance_data(pid, tid)
+        if "docker_challenge" in instance and instance["docker_challenge"]:
+            containers = api.docker.submission_to_cid(tid, pid)
+            for c in containers:
+                cid = c["cid"]
+                api.docker.delete(cid)
+
     if suspicious:
         cache.invalidate(api.submissions.get_suspicious_submissions, tid)
 

@@ -154,6 +154,7 @@ from pwd import getpwnam
 from random import randint, Random
 from time import sleep
 
+
 from hacksport.operations import create_user, execute
 from hacksport.problem import (
     Compiled,
@@ -169,6 +170,8 @@ from hacksport.problem import (
     Remote,
     Service,
 )
+# must follow hacksport.problem due to dependency on Challenge
+from hacksport.docker import DockerChallenge
 from hacksport.status import get_all_problem_instances, get_all_problems
 from jinja2 import Environment, FileSystemLoader, Template
 from shell_manager.package import package_problem
@@ -900,11 +903,17 @@ def deploy_problem(
             "should_symlink": not isinstance(problem, Service)
             and len(instance["files"]) > 0,
             "files": [f.to_dict() for f in instance["files"]],
+            "docker_challenge": isinstance(problem, DockerChallenge)
         }
 
         if isinstance(problem, Service):
             deployment_info["port"] = problem.port
             logger.debug("...Port %d has been allocated.", problem.port)
+
+        # pass along image digest so webui can launch the correct image
+        if isinstance(problem, DockerChallenge):
+            deployment_info["instance_digest"] = problem.image_digest
+            deployment_info["port_info"] = {n: p.dict() for n, p in problem.ports.items()}
 
         port_map[(current_problem, instance_number)] = deployment_info.get("port", None)
 

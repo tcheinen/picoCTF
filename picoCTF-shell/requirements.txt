@@ -1,4 +1,5 @@
 coloredlogs==10.0
+docker[tls]==4.2.0
 Jinja2==2.10.1
 spur==0.3.20
 voluptuous==0.11.1

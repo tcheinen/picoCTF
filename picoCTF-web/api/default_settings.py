@@ -23,3 +23,10 @@ SECRET_KEY = "INSECURE_DEFAULT_CHANGE_ME"
 SESSION_COOKIE_DOMAIN = None
 SESSION_COOKIE_PATH = "/"
 SESSION_COOKIE_NAME = "flask"
+
+DOCKER_PUB = None                   # public hostname (e.g. docker.picoctf.com)
+DOCKER_HOST = ""                    # internal URI (e.g. tcp://192.168.2.6:2376)
+DOCKER_CA = ""                      # path to ca.pem
+DOCKER_CLIENT = ""                  # path to cert.pem
+DOCKER_KEY = ""                     # path to key.pem
+DOCKER_CONTAINERS_PER_TEAM = 3

@@ -18,6 +18,7 @@ from voluptuous import (
     ALLOW_EXTRA,
     Length,
     MultipleInvalid,
+    Optional,
     Range,
     Required,
     Schema,
@@ -133,6 +134,10 @@ local_config_schema = Schema(
         Required("hostname"): str,
         Required("web_server"): str,
         Required("rate_limit_bypass_key"): str,
+        Optional("docker_host"): str,
+        Optional("docker_ca_cert"): str,
+        Optional("docker_client_cert"): str,
+        Optional("docker_client_key"): str
     },
     extra=False,
 )

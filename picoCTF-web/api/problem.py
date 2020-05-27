@@ -3,6 +3,7 @@
 from random import randint
 
 import pymongo
+from flask import current_app
 from voluptuous import ALLOW_EXTRA, Range, Required, Schema
 
 import api
@@ -110,6 +111,28 @@ def upsert_problem(problem, sid):
         instance["sid"] = sid
         if server_number is not None:
             instance["server_number"] = server_number
+
+    # Docker Instance tracking
+    # XXX: also track port information and TTL
+    digests = []
+    for i in problem["instances"]:
+        if "docker_challenge" in i and i["docker_challenge"]:
+            digests.append(i["instance_digest"])
+
+            try:
+                docker_pub = current_app.config["DOCKER_PUB"]
+            except KeyError:
+                raise PicoException("Attempted to load a DockerChallenge but DOCKER_PUB not configured")
+
+            # update port display style with docker host value
+            for p, v in i["port_info"].items():
+                v["fmt"] = v["fmt"].format(host=docker_pub)
+
+    # track problem to image information for docker instances
+    pid = problem["pid"]
+    if len(digests) > 0:
+        data = {"pid": pid, "digests": digests}
+        db.images.update({"pid": pid}, data, upsert=True)
 
     if problem.get("walkthrough"):  # Falsy for None and empty string
         problem["has_walkthrough"] = True

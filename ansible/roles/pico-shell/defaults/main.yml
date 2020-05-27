@@ -28,9 +28,11 @@ problem_source_dirs:
   - "{{ pico_base_dir }}/problems/examples/binary-exploitation/buffer-overflow-1"
   - "{{ pico_base_dir }}/problems/examples/cryptography/ecb-1"
   - "{{ pico_base_dir }}/problems/examples/web-exploitation/sql-injection-1"
+  - "{{ pico_base_dir }}/problems/examples/on-demand"
 
 bundles:
   - "{{ pico_base_dir }}/problems/bundles/challenge-sampler.json"
+  - "{{ pico_base_dir }}/problems/bundles/on-demand.json"
 
 # SSL requires cert and vault-encrypted key
 enable_shell_ssl: False

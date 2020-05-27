@@ -1,0 +1,14 @@
+---
+# tasks to run after the docker server is provisioned
+# generate certificates as nessecary
+
+- name: "Generate Docker Client Certs ({{client}})"
+  include_role:
+    name: docker_tls
+    tasks_from: gen_client
+  with_items:
+    - "{{ web_fqdn }}"
+    - "{{ shell_hostname }}"
+  loop_control:
+    loop_var: client
+  tags: ["docker", "docker-client"]

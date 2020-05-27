@@ -8,6 +8,7 @@ from api import PicoException
 from .achievements import ns as achievements_ns
 from .bundles import ns as bundles_ns
 from .exceptions import ns as exceptions_ns
+from .docker import ns as docker_ns
 from .feedback import ns as feedback_ns
 from .groups import ns as groups_ns
 from .minigames import ns as minigames_ns
@@ -29,6 +30,7 @@ api = Api(app=blueprint, title="picoCTF API", version="1.0",)
 for ns in [
     achievements_ns,
     bundles_ns,
+    docker_ns,
     exceptions_ns,
     feedback_ns,
     groups_ns,

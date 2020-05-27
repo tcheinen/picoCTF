@@ -4,16 +4,22 @@
 
 [local_development:children]
 db
-shell
 web
+shell
+docker
 
 # In a development environment, or simple deployment collocate the database
 # with the web server
 [db]
 dev_web     ansible_connection=local    hostname=pico-local-dev-web-db
 
+[web]
+dev_web     ansible_connection=local    hostname=pico-local-dev-web-db
+
+# In a development environment, or simple deployment collocate the docker
+# challenges with the shell server
 [shell]
 dev_shell   ansible_connection=local    hostname=pico-local-dev-shell
 
-[web]
-dev_web     ansible_connection=local    hostname=pico-local-dev-web-db
+[docker]
+dev_shell   ansible_connection=local    hostname=pico-local-dev-shell
